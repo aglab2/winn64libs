@@ -1,7 +1,7 @@
 How to build HackerSM64 using MinGW on Windows
 
 1) Download necessary tools
- * [Cmder]([Cmder](https://cmder.app/)) - click "Download Full" to have git
+ * [Cmder](https://cmder.app/) - click "Download Full" to have git
  * [winlibs](https://github.com/brechtsanders/winlibs_mingw/releases/download/14.1.0posix-18.1.5-11.0.1-msvcrt-r1/winlibs-x86_64-posix-seh-gcc-14.1.0-mingw-w64msvcrt-11.0.1-r1.zip) - using MSVCRT runtime without LLVM
  * [winn64libs](https://github.com/aglab2/winn64libs/releases/download/1.0/winn64libs.zip)
  * [Python](https://www.python.org/ftp/python/3.12.3/python-3.12.3-amd64.exe) - make sure to select "Add Python to environment variables"
