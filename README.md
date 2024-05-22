@@ -1,4 +1,4 @@
-How to build HackerSM64 using MinGW on Windows
+How to build HackerSM64 using MinGW on Windows. Compilers SDK will take ~1Gb of disk space + cmder takes ~400MB and python takes ~150MB totally in roughly ~1.5GB of disk space.
 
 1) Download necessary tools
  * [Cmder](https://cmder.app/) - click "Download Full" to have git
