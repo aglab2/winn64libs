@@ -189,6 +189,7 @@ test -d "gcc-$GCC_V"           || { \
                                       tar -xJf "gcc-$GCC_V.tar.xz"; \
                                       pushd "gcc-$GCC_V"; \
                                       patch -p1 < "../gcc-vr4300.patch"; \
+                                      patch -p1 < "../bb-reorder.patch"; \
                                       patch -p1 < "../mips_floats.patch"; \
                                       patch -p1 < "../mingw.patch"; \
                                       contrib/download_prerequisites; \
