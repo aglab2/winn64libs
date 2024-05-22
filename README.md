@@ -3,7 +3,7 @@ How to build HackerSM64 using MinGW on Windows. Compilers SDK will take ~1Gb of 
 1) Download necessary tools
  * [Cmder](https://cmder.app/) - click "Download Full" to have git
  * [winlibs](https://github.com/brechtsanders/winlibs_mingw/releases/download/14.1.0posix-18.1.5-11.0.1-ucrt-r1/winlibs-x86_64-posix-seh-gcc-14.1.0-mingw-w64ucrt-11.0.1-r1.zip) - using UCRT runtime without LLVM
- * [winn64libs](https://github.com/aglab2/winn64libs/releases/download/1.1/n64libs.zip)
+ * [winn64libs](https://github.com/aglab2/winn64libs/releases/download/1.2/n64libs.zip)
  * [Python](https://www.python.org/ftp/python/3.12.3/python-3.12.3-amd64.exe)
 
 2) Install python using downloaded exe. Select "Use admin priviliges when installer py.exe" and "Add python.exe to PATH". Click "Customize installation". Unselect all checkboxes. Only select checkboxes "Documentation", "pip" and "for all users (requires admin priviliges)". Click "Next". Unselect all checkboxes. Only select "Install Python 3.12 for all users", "Add Python to environment variables" and "Precompile standard library". Click "Install", wait for it to finish. Click "Disable path length limit". Click "Close". Go to folder when python was installed (likely "C:/Program Files/Python312". Copy "python.exe" to "python3.exe".
