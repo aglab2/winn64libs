@@ -186,8 +186,11 @@ test -f "mips_floats.patch"           || download "https://gist.githubuserconten
 # Dependency source: Extract stage
 test -d "binutils-$BINUTILS_V" || unzip_and_patch "binutils-$BINUTILS_V" "gas-vr4300.patch" 
 test -d "gcc-$GCC_V"           || { \
-                                      unzip_and_patch "gcc-$GCC_V" "gcc-vr4300.patch" "mips_floats.patch" "mingw.patch"; \
+                                      tar -xJf "gcc-$GCC_V.tar.xz"; \
                                       pushd "gcc-$GCC_V"; \
+                                      patch -p1 < "../gcc-vr4300.patch"; \
+                                      patch -p1 < "../mips_floats.patch"; \
+                                      patch -p1 < "../mingw.patch"; \
                                       contrib/download_prerequisites; \
                                       popd; \
                                   }
