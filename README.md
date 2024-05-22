@@ -4,7 +4,7 @@ How to build HackerSM64 using MinGW on Windows
  * [Cmder](https://cmder.app/) - click "Download Full" to have git
  * [winlibs](https://github.com/brechtsanders/winlibs_mingw/releases/download/14.1.0posix-18.1.5-11.0.1-msvcrt-r1/winlibs-x86_64-posix-seh-gcc-14.1.0-mingw-w64msvcrt-11.0.1-r1.zip) - using MSVCRT runtime without LLVM
  * [winn64libs](https://github.com/aglab2/winn64libs/releases/download/1.0/winn64libs.zip)
- * [Python](https://www.python.org/ftp/python/3.12.3/python-3.12.3-amd64.exe) - make sure to select "Add Python to environment variables"
+ * [Python](https://www.python.org/ftp/python/3.12.3/python-3.12.3-amd64.exe) - select "Use admin priviliges when installer py.exe" and "Add python.exe to PATH". Click "Customize installation". Unselect all checkboxes. Only select checkboxes "Documentation", "pip" and "for all users (requires admin priviliges)". Click "Next". Unselect all checkboxes. Only select "Install Python 3.12 for all users", "Add Python to environment variables" and "Precompile standard library".
 
 2) Extract all folders. I will use dir "C:/" for convenience. I suggest using short folders without any whitespaces. I assume that folders were unpacked in "C:/winlibs" and "C:/n64libs". Setup folders extraction to have "bin" in the root like "C:/winlibs/bin" and "C:/n64libs/bin"
 3) In search bar search for "Edit the system environment variables". Click on "Environment Variables...". in "System Variables" double click on "Path" entry. Click "New", then "Browse" and select "C:/winlibs/bin". Perform the same for "C:/n64libs/bin".
