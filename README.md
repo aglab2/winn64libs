@@ -33,6 +33,7 @@ Supported LTO compression algorithms: zlib zstd
 gcc version 12.2.0 (GCC)
 ```
 Ensure that "MinGW-W64 x86_64-msvcrt-posix-seh" is present in gcc output.
+
 6) Clone repo using [tutorial](https://github.com/aglab2/tutorials/blob/main/git.md). Base repo is https://github.com/aglab2/HackerSM64-MinGW. I assume that repository was forked and cloned to C:\HackerSM64-MinGW 
 7) Place legally obtained "baserom.us.z64" in C:\HackerSM64-MinGW.
 8) To build the repository, change directory to "C:\HackerSM64-MinGW" in cmder and use command "mingw32-make -j12". Please change "12" to amount of CPU cores.
