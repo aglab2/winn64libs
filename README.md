@@ -8,12 +8,10 @@ How to build HackerSM64 using MinGW on Windows. Compilers SDK will take ~1Gb of 
 
 2) Install python using downloaded exe. Select "Use admin priviliges when installer py.exe" and "Add python.exe to PATH". Click "Customize installation". Unselect all checkboxes. Only select checkboxes "Documentation", "pip" and "for all users (requires admin priviliges)". Click "Next". Unselect all checkboxes. Only select "Install Python 3.12 for all users", "Add Python to environment variables" and "Precompile standard library". Click "Install", wait for it to finish. Click "Disable path length limit". Click "Close". Go to folder when python was installed (likely "C:/Program Files/Python312". Copy "python.exe" to "python3.exe".
 
-3) Extract cmder.zip folder. For convenience, i will use folder "C:/cmder". Launch "cmder.exe".
-
-4) Extract winlibs and winn64libs folders. I will use dir "C:/" for convenience. I suggest using short folders without any whitespaces. I assume that folders were unpacked in "C:/winlibs" and "C:/n64libs". Setup folders extraction to have "bin" in the root like "C:/winlibs/bin" and "C:/n64libs/bin"
-5) In search bar search for "Edit the system environment variables". Click on "Environment Variables...". in "System Variables" double click on "Path" entry. Click "New", then "Browse" and select "C:/winlibs/bin". Perform the same for "C:/n64libs/bin". In "User variables from admin" click on "Path", select "%USERPROFILE%/AppData/Local/Microsoft/WindowsApps", click "Delete".
-6) Launch Cmder and let it do its preparations.
-7) Ensure that compilers work: execute "gcc -v" and "mips-n64-gcc -v". You should observe the output similar to the following:
+3) Extract winlibs and winn64libs folders. I will use dir "C:/" for convenience. I suggest using short folders without any whitespaces. I assume that folders were unpacked in "C:/winlibs" and "C:/n64libs". Setup folders extraction to have "bin" in the root like "C:/winlibs/bin" and "C:/n64libs/bin"
+4) In search bar search for "Edit the system environment variables". Click on "Environment Variables...". in "System Variables" double click on "Path" entry. Click "New", then "Browse" and select "C:/winlibs/bin". Perform the same for "C:/n64libs/bin". In "User variables from admin" click on "Path", select "%USERPROFILE%/AppData/Local/Microsoft/WindowsApps", click "Delete".
+5) Extract cmder.zip folder. For convenience, i will use folder "C:/cmder". Launch "cmder.exe".
+6) Ensure that compilers work: execute "gcc -v" and "mips-n64-gcc -v". You should observe the output similar to the following:
 ```
 λ gcc -v
 Using built-in specs.
