@@ -5,13 +5,15 @@ How to build HackerSM64 using MinGW on Windows. Compilers SDK will take ~1Gb of 
  * [winlibs](https://github.com/brechtsanders/winlibs_mingw/releases/download/14.1.0posix-18.1.5-11.0.1-ucrt-r1/winlibs-x86_64-posix-seh-gcc-14.1.0-mingw-w64ucrt-11.0.1-r1.zip) - using UCRT runtime without LLVM
  * [winn64libs](https://github.com/aglab2/winn64libs/releases/download/1.2/n64libs.zip)
  * [Python](https://www.python.org/ftp/python/3.12.3/python-3.12.3-amd64.exe)
+ * [ripgrep](https://github.com/BurntSushi/ripgrep/releases/download/14.1.0/ripgrep-14.1.0-x86_64-pc-windows-msvc.zip) - latest release for ripgrep
 
 2) Install python using downloaded exe. Select "Use admin priviliges when installer py.exe" and "Add python.exe to PATH". Click "Customize installation". Unselect all checkboxes. Only select checkboxes "Documentation", "pip" and "for all users (requires admin priviliges)". Click "Next". Unselect all checkboxes. Only select "Install Python 3.12 for all users", "Add Python to environment variables" and "Precompile standard library". Click "Install", wait for it to finish. Click "Disable path length limit". Click "Close". Go to folder when python was installed (likely "C:/Program Files/Python312". Copy "python.exe" to "python3.exe".
 
 3) Extract winlibs and winn64libs folders. I will use dir "C:/" for convenience. I suggest using short folders without any whitespaces. I assume that folders were unpacked in "C:/winlibs" and "C:/n64libs". Setup folders extraction to have "bin" in the root like "C:/winlibs/bin" and "C:/n64libs/bin"
 4) In search bar search for "Edit the system environment variables". Click on "Environment Variables...". in "System Variables" double click on "Path" entry. Click "New", then "Browse" and select "C:/winlibs/bin". Perform the same for "C:/n64libs/bin". In "User variables from admin" click on "Path", select "%USERPROFILE%/AppData/Local/Microsoft/WindowsApps", click "Delete".
-5) Extract cmder.zip folder. For convenience, i will use folder "C:/cmder". Launch "cmder.exe".
-6) Ensure that compilers work: execute "gcc -v" and "mips-n64-gcc -v". You should observe the output similar to the following:
+5) Extract cmder.zip folder. For convenience, i will use folder "C:/cmder".
+6) Extract `rg.exe` from ripgrep zip in folder `ripgrep-14.1.0.x86_64-pc-windows-msvc`. Put `rg.exe` in `bin` folder near `Cmder.exe`, in my case it is folder `C:\Cmder\bin`.
+7) Launch "Cmder.exe". Ensure that compilers work: execute `gcc -v`, `mips-n64-gcc -v` and `rg -V`. You should observe the output similar to the following:
 ```
 λ gcc -v
 Using built-in specs.
@@ -34,12 +36,15 @@ Configured with: ../gcc-12.2.0/configure --prefix=/d/crash/sdk --with-gnu-as=/d/
 Thread model: single
 Supported LTO compression algorithms: zlib zstd
 gcc version 12.2.0 (GCC)
+
+λ rg -V
+ripgrep 14.1.0 (rev e50df40a19)
 ```
 Ensure that "MinGW-W64 x86_64-ucrt-posix-seh" is present in gcc output.
 
-7) Clone repo using [tutorial](https://github.com/aglab2/tutorials/blob/main/git.md). Base repo is https://github.com/aglab2/HackerSM64-MinGW. I assume that repository was forked and cloned to C:\HackerSM64-MinGW 
-8) Place legally obtained "baserom.us.z64" in C:\HackerSM64-MinGW.
-9) To build the repository, change directory to "C:\HackerSM64-MinGW" in cmder and use command "mingw32-make -j12". Please change "12" to amount of CPU cores.
+8) Clone repo using [tutorial](https://github.com/aglab2/tutorials/blob/main/git.md). Base repo is https://github.com/aglab2/HackerSM64-MinGW. I assume that repository was forked and cloned to C:\HackerSM64-MinGW 
+9) Place legally obtained "baserom.us.z64" in C:\HackerSM64-MinGW.
+10) To build the repository, change directory to "C:\HackerSM64-MinGW" in cmder and use command "mingw32-make -j12". Please change "12" to amount of CPU cores.
 ```
 λ mingw32-make
 Building tools...
