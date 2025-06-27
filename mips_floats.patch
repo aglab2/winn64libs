@@ -66,7 +66,7 @@ index e0f0a582732..051ddfd2bab 100644
 +      long v;
 +      REAL_VALUE_TO_TARGET_SINGLE (*CONST_DOUBLE_REAL_VALUE (operands[1]), v);
 +
-+      operands[1] = force_reg (SImode, GEN_INT (v));
++      operands[1] = force_reg (SImode, GEN_INT (trunc_int_for_mode(v, SImode)));
 +      operands[1] = gen_rtx_SUBREG (SFmode, operands[1], 0);
 +      emit_move_insn (operands[0], operands[1]);
 +      DONE;
