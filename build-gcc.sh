@@ -10,7 +10,7 @@
 set -e
 set -x
 
-INSTALL_PATH="/Users/admin/Documents/git/winn64libs/sdk"
+INSTALL_PATH="/d/crash/sdk"
 
 if ! mkdir -p "$INSTALL_PATH" || ! [ -w "$INSTALL_PATH" ]
 then
@@ -167,24 +167,21 @@ download () {
   fi
 }
 
-unzip_and_patch () {
-  tar -xJf "$1.tar.xz"
-  pushd $1
-  patch -p1 < ../$2
-  popd
-}
-
 # Dependency source: Download stage
 test -f "binutils-$BINUTILS_V.tar.xz" || download "https://ftp.gnu.org/gnu/binutils/binutils-$BINUTILS_V.tar.xz"
 test -f "gcc-$GCC_V.tar.xz"           || download "https://ftp.gnu.org/gnu/gcc/gcc-$GCC_V/gcc-$GCC_V.tar.xz"
 test -f "newlib-$NEWLIB_V.tar.gz"     || download "https://sourceware.org/pub/newlib/newlib-$NEWLIB_V.tar.gz"
 
-test -f "gas-vr4300.patch"            || download "https://cdn.discordapp.com/attachments/437395326567972864/1096125000580337714/gas-vr4300.patch"
-test -f "gcc-vr4300.patch"            || download "https://cdn.discordapp.com/attachments/437395326567972864/1096125000244805672/gcc-vr4300.patch"
-test -f "mips_floats.patch"           || download "https://gist.githubusercontent.com/Thar0/a5ecc783b5ef711488c09204b12ef378/raw/ae2752c47349b4c3145aa0b64fc9ede10f2b5635/mips_floats.patch"
-
 # Dependency source: Extract stage
-test -d "binutils-$BINUTILS_V" || unzip_and_patch "binutils-$BINUTILS_V" "gas-vr4300.patch" 
+test -d "binutils-$BINUTILS_V" || { \
+                                      tar -xJf "binutils-$BINUTILS_V.tar.xz"; \
+                                      pushd "binutils-$BINUTILS_V"; \
+                                      patch -p1 < "../gas-vr4300.patch"; \
+                                      patch -p1 < "../gcc-vr4300.patch"; \
+                                      patch -p1 < "../no-fp-warn.patch"; \
+                                      patch -p1 < "../sdata_merging_bfd.patch"; \
+                                      popd; \
+                                  }
 test -d "gcc-$GCC_V"           || { \
                                       tar -xJf "gcc-$GCC_V.tar.xz"; \
                                       pushd "gcc-$GCC_V"; \
@@ -205,7 +202,9 @@ CFLAGS="-O2" CXXFLAGS="-O2" ./configure \
     --target=${MIPS}-elf \
     --with-cpu=mips64vr4300 \
     --program-prefix=mips-n64- \
-    --disable-werror
+    --disable-werror \
+    --enable-plugins \
+    --enable-lto
 make -j "$JOBS"
 make install
 
@@ -244,7 +243,10 @@ CFLAGS="-O2" CXXFLAGS="-O2" \
     --with-abi=${ABI} \
     $FP_FLAGS \
     --with-system-zlib \
-    --with-specs="${ABI_FLAGS} ${TARGET_FLAGS}"
+    --with-specs="${ABI_FLAGS} ${TARGET_FLAGS}" \
+    --enable-plugins \
+    --enable-plugin \
+    --enable-lto
 make clean -j "$JOBS"
 make all-gcc -j "$JOBS"
 make install-gcc
