@@ -10,7 +10,7 @@
 set -e
 set -x
 
-INSTALL_PATH="/run/media/admin/Data/crash/sdk"
+INSTALL_PATH="/d/crash/sdk"
 
 if ! mkdir -p "$INSTALL_PATH" || ! [ -w "$INSTALL_PATH" ]
 then
@@ -147,7 +147,7 @@ JOBS="${JOBS:-1}" # If getconf returned nothing, default to 1
 
 # Dependency source libs (Versions)
 BINUTILS_V=2.30
-GCC_V=15.2.0
+GCC_V=14.3.0
 NEWLIB_V=4.1.0
 
 # Check if a command-line tool is available: status 0 means "yes"; status 1 means "no"
