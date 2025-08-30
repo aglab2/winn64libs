@@ -1,0 +1,23 @@
+diff --git a/gas/config/tc-mips.c b/gas/config/tc-mips.c
+--- a/gas/config/tc-mips.c
++++ b/gas/config/tc-mips.c
+@@ -5013,19 +5013,6 @@
+   if (AT && type == OP_REG_GP && regno == AT)
+     arg->seen_at = TRUE;
+ 
+-  if (type == OP_REG_FP
+-      && (regno & 1) != 0
+-      && !mips_oddfpreg_ok (arg->insn->insn_mo, arg->opnum))
+-    {
+-      /* This was a warning prior to introducing O32 FPXX and FP64 support
+-	 so maintain a warning for FP32 but raise an error for the new
+-	 cases.  */
+-      if (FPR_SIZE == 32)
+-	as_warn (_("float register should be even, was %d"), regno);
+-      else
+-	as_bad (_("float register should be even, was %d"), regno);
+-    }
+-
+   if (type == OP_REG_CCC)
+     {
+       const char *name;

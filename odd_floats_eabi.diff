@@ -1,0 +1,238 @@
+diff --git a/gcc/config/mips/mips.cc b/gcc/config/mips/mips.cc
+index 999127a72e7..4985812b15f 100644
+--- a/gcc/config/mips/mips.cc
++++ b/gcc/config/mips/mips.cc
+@@ -20235,7 +20249,7 @@ mips_option_override (void)
+ 	error ("unsupported combination: %s", "-mfp64 -msingle-float");
+       else if (TARGET_64BIT && TARGET_DOUBLE_FLOAT && !TARGET_FLOAT64)
+ 	error ("unsupported combination: %s", "-mgp64 -mfp32 -mdouble-float");
+-      else if (!TARGET_64BIT && TARGET_FLOAT64)
++      else if (!TARGET_64BIT && TARGET_FLOAT64 && 0)
+ 	{
+ 	  if (!ISA_HAS_MXHC1)
+ 	    error ("%<-mgp32%> and %<-mfp64%> can only be combined if"
+diff --git a/gcc/config/mips/mips.h b/gcc/config/mips/mips.h
+index 6daf6d37165..3e0b60e3c67 100644
+--- a/gcc/config/mips/mips.h
++++ b/gcc/config/mips/mips.h
+@@ -1915,7 +1915,6 @@ FP_ASM_SPEC "\
+ #define DSP_ACC_REG_LAST 181
+ #define DSP_ACC_REG_NUM (DSP_ACC_REG_LAST - DSP_ACC_REG_FIRST + 1)
+ 
+-#define AT_REGNUM	(GP_REG_FIRST + 1)
+ #define HI_REGNUM	(TARGET_BIG_ENDIAN ? MD_REG_FIRST : MD_REG_FIRST + 1)
+ #define LO_REGNUM	(TARGET_BIG_ENDIAN ? MD_REG_FIRST + 1 : MD_REG_FIRST)
+ 
+diff --git a/gcc/config/mips/mips.md b/gcc/config/mips/mips.md
+index 5d04ac566dd..4a4a26d8b95 100644
+--- a/gcc/config/mips/mips.md
++++ b/gcc/config/mips/mips.md
+@@ -166,6 +166,7 @@
+ 
+ (define_constants
+   [(TLS_GET_TP_REGNUM		3)
++   (AT_REGNUM			1)
+    (GET_FCSR_REGNUM		2)
+    (SET_FCSR_REGNUM		4)
+    (PIC_FUNCTION_ADDR_REGNUM	25)
+@@ -4079,6 +4080,32 @@
+    (set_attr "cnv_mode"	"I2S")])
+ 
+ 
++(define_expand "floatunssisf2"
++  [(set (match_operand:SF 0 "register_operand" "=f")
++	(match_operand:SI 1 "register_operand"))]
++  "TARGET_HARD_FLOAT && TARGET_FLOAT64 && TARGET_DOUBLE_FLOAT"
++{
++  /* Fast-path for u32 to f32 conversions.  */
++  rtx reg1 = gen_reg_rtx (DImode);
++  emit_insn (gen_mthc1di (reg1, const0_rtx, operands[1]));
++  emit_insn (gen_floatdisf2 (operands[0], reg1));
++  DONE;
++})
++
++
++(define_expand "floatunssidf2"
++  [(set (match_operand:DF 0 "register_operand" "=f")
++	(match_operand:SI 1 "register_operand"))]
++  "TARGET_HARD_FLOAT && TARGET_FLOAT64 && TARGET_DOUBLE_FLOAT"
++{
++  /* Fast-path for u32 to f64 conversions.  */
++  rtx reg1 = gen_reg_rtx (DImode);
++  emit_insn (gen_mthc1di (reg1, const0_rtx, operands[1]));
++  emit_insn (gen_floatdidf2 (operands[0], reg1));
++  DONE;
++})
++
++
+ (define_insn "floatdisf2"
+   [(set (match_operand:SF 0 "register_operand" "=f")
+ 	(float:SF (match_operand:DI 1 "register_operand" "f")))]
+@@ -4177,38 +4204,69 @@
+ })
+ 
+ 
++(define_insn "fix_truncsfsi2_no_overflow"
++  [(set (match_operand:SI 0 "register_operand" "=f")
++	(fix:SI (fix:DI (match_operand:SF 1 "register_operand" "f"))))]
++  "TARGET_HARD_FLOAT && TARGET_FLOAT64 && TARGET_DOUBLE_FLOAT"
++  "trunc.l.s %0,%1"
++  [(set_attr "type"	"fcvt")
++   (set_attr "mode"	"SF")
++   (set_attr "cnv_mode"	"S2I")])
++
++
++(define_insn "trunc_w_s_crasher"
++  [(return)
++   (unspec_volatile [(const_int 0)] UNSPEC_BLOCKAGE)
++   (set (match_operand:SI 0 "register_operand" "=f")
++	(fix:SI (match_operand:SF 1 "register_operand" "f")))]
++  "TARGET_HARD_FLOAT && TARGET_FLOAT64 && TARGET_DOUBLE_FLOAT"
++  "trunc.w.s %0,%1\n\tteq\t%.,%."
++  [(set_attr "type"	"trap")
++   (set_attr "mode"	"none")])
++
++
+ (define_expand "fixuns_truncsfsi2"
+   [(set (match_operand:SI 0 "register_operand")
+ 	(unsigned_fix:SI (match_operand:SF 1 "register_operand")))]
+   "TARGET_HARD_FLOAT"
+ {
+-  rtx reg1 = gen_reg_rtx (SFmode);
+-  rtx reg2 = gen_reg_rtx (SFmode);
+-  rtx reg3 = gen_reg_rtx (SImode);
++  rtx reg_2exp32 = gen_reg_rtx (SFmode); /* 2^32 constant */
++  rtx reg_zero = gen_reg_rtx (SFmode); /* 0.0 constant */
+   rtx_code_label *label1 = gen_label_rtx ();
+   rtx_code_label *label2 = gen_label_rtx ();
+-  rtx test;
++  rtx test1;
++  rtx test2;
+   REAL_VALUE_TYPE offset;
++  rtx_insn *jump;
+ 
+-  real_2expN (&offset, 31, SFmode);
+-
+-  mips_emit_move (reg1, const_double_from_real_value (offset, SFmode));
++  /* Move 2^32 into an rtx reg.  */
++  real_2expN (&offset, 32, SFmode);
++  mips_emit_move (reg_2exp32, const_double_from_real_value (offset, SFmode));
+   do_pending_stack_adjust ();
+ 
+-  test = gen_rtx_GE (VOIDmode, operands[1], reg1);
+-  emit_jump_insn (gen_cbranchsf4 (test, operands[1], reg1, label1));
+-
+-  emit_insn (gen_fix_truncsfsi2 (operands[0], operands[1]));
++  /* Check if op1 >= 2^32 and branch if so.  */
++  test1 = gen_rtx_GE (VOIDmode, operands[1], reg_2exp32);
++  jump = emit_jump_insn (gen_cbranchsf4 (test1, operands[1], reg_2exp32, label1));
++  add_reg_br_prob_note (jump, profile_probability::very_unlikely ());
++  
++  /* Move 0.0 into an rtx reg.  */
++  mips_emit_move (reg_zero, CONST0_RTX (SFmode));
++
++  /* Check if op1 < 0.0 and branch if so.  */
++  test2 = gen_rtx_LT (VOIDmode, operands[1], reg_zero);
++  jump = emit_jump_insn (gen_cbranchsf4 (test2, operands[1], reg_zero, label1));
++  add_reg_br_prob_note (jump, profile_probability::very_unlikely ());
++
++  /* Actually do the conversion.  */
++  emit_insn (gen_fix_truncsfsi2_no_overflow (operands[0], operands[1]));
++  /* Step over the trap.  */
+   emit_jump_insn (gen_rtx_SET (pc_rtx, gen_rtx_LABEL_REF (VOIDmode, label2)));
+   emit_barrier ();
+ 
++  /* Second codepath for out of range values, add a trap.  */
+   emit_label (label1);
+-  mips_emit_move (reg2, gen_rtx_MINUS (SFmode, operands[1], reg1));
+-  mips_emit_move (reg3, GEN_INT (trunc_int_for_mode
+-				 (BITMASK_HIGH, SImode)));
+-
+-  emit_insn (gen_fix_truncsfsi2 (operands[0], reg2));
+-  emit_insn (gen_iorsi3 (operands[0], operands[0], reg3));
++  emit_insn (gen_trunc_w_s_crasher (operands[0], reg_2exp32));
++  emit_barrier ();
+ 
+   emit_label (label2);
+ 
+@@ -5370,28 +5428,22 @@
+ 
+ (define_expand "move_doubleword_fpr<mode>"
+   [(set (match_operand:SPLITF 0)
+-	(match_operand:SPLITF 1))]
++	(match_operand:SPLITF 1))
++   (clobber (reg:DI AT_REGNUM))]
+   ""
+ {
+   if (FP_REG_RTX_P (operands[0]))
+     {
+       rtx low = mips_subword (operands[1], 0);
+       rtx high = mips_subword (operands[1], 1);
+-      emit_insn (gen_load_low<mode> (operands[0], low));
+-      if (ISA_HAS_MXHC1 && !TARGET_64BIT)
+-      	emit_insn (gen_mthc1<mode> (operands[0], high, operands[0]));
+-      else
+-	emit_insn (gen_load_high<mode> (operands[0], high, operands[0]));
++      emit_insn (gen_mthc1<mode> (operands[0], high, low));
+     }
+   else
+     {
+       rtx low = mips_subword (operands[0], 0);
+       rtx high = mips_subword (operands[0], 1);
++      emit_insn (gen_mfhc1<mode> (high, operands[1]));
+       emit_insn (gen_store_word<mode> (low, operands[1], const0_rtx));
+-      if (ISA_HAS_MXHC1 && !TARGET_64BIT)
+-	emit_insn (gen_mfhc1<mode> (high, operands[1]));
+-      else
+-	emit_insn (gen_store_word<mode> (high, operands[1], const1_rtx));
+     }
+   DONE;
+ })
+@@ -5444,10 +5496,24 @@
+ (define_insn "mthc1<mode>"
+   [(set (match_operand:SPLITF 0 "register_operand" "=f")
+ 	(unspec:SPLITF [(match_operand:<HALFMODE> 1 "reg_or_0_operand" "dJ")
+-		        (match_operand:SPLITF 2 "register_operand" "0")]
+-		       UNSPEC_MTHC1))]
+-  "TARGET_HARD_FLOAT && ISA_HAS_MXHC1"
+-  "mthc1\t%z1,%0"
++		        (match_operand:<HALFMODE> 2 "reg_or_0_operand" "dJ")]
++		       UNSPEC_MTHC1))
++   (clobber (reg:DI AT_REGNUM))]
++  "TARGET_HARD_FLOAT"
++{
++  /* Loading both upper and lower with const zero can just load from $0.  */
++  if (operands[1] == const0_rtx && operands[2] == const0_rtx)
++    return "dmtc1\t%.,%0";
++  /* If only upper is const zero, no need to emit a dsll for it.  */
++  if (operands[1] == const0_rtx)
++    return "%["
++	   "dmtc1\t%.,%0\n\tmtc1\t%z2,%0"
++	   "%]";
++  /* Otherwise assume nothing, use an intermediate 64-bit AT.  */
++  return "%(%["
++	 "dsll32\t%@,%z1,0\n\tdmtc1\t%@,%0\n\tmtc1\t%z2,%0"
++	 "%]%)";
++}
+   [(set_attr "move_type" "mtc")
+    (set_attr "mode" "<HALFMODE>")])
+ 
+@@ -5455,9 +5521,16 @@
+ (define_insn "mfhc1<mode>"
+   [(set (match_operand:<HALFMODE> 0 "register_operand" "=d")
+ 	(unspec:<HALFMODE> [(match_operand:SPLITF 1 "register_operand" "f")]
+-			    UNSPEC_MFHC1))]
+-  "TARGET_HARD_FLOAT && ISA_HAS_MXHC1"
+-  "mfhc1\t%0,%1"
++			    UNSPEC_MFHC1))
++   (clobber (reg:DI AT_REGNUM))]
++  "TARGET_HARD_FLOAT"
++{
++  /* Move the upper 32-bits out of the floating-point register,
++   * use a 32-bit AT.  */
++  return "%(%["
++	 "dmfc1\t%@,%z1\n\tdsra32\t%0,%@,0"
++	 "%]%)";
++}
+   [(set_attr "move_type" "mfc")
+    (set_attr "mode" "<HALFMODE>")])
