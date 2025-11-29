@@ -10,7 +10,7 @@
 set -e
 set -x
 
-INSTALL_PATH="/d/crash/sdk"
+INSTALL_PATH="/opt/sdk"
 
 if ! mkdir -p "$INSTALL_PATH" || ! [ -w "$INSTALL_PATH" ]
 then
@@ -187,6 +187,7 @@ test -d "gcc-$GCC_V"           || { \
                                       patch -p1 < "../bb-reorder.patch"; \
                                       patch -p1 < "../gcc-vr4300.patch"; \
                                       patch -p1 < "../mips_floats.patch"; \
+                                      patch -p1 < "../mips_cache.patch"; \
                                       patch -p1 < "../mingw.patch"; \
                                       sed -i 's/set_std_c23 (false/set_std_c17 (false/' gcc/c-family/c-opts.cc \
                                       contrib/download_prerequisites; \
