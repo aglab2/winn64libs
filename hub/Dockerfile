@@ -9,6 +9,7 @@ RUN apt-get update && \
         ripgrep \
         make \
         libc6-dev \
+        git \
         ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
