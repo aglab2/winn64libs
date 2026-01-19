@@ -3,6 +3,7 @@ FROM debian:13-slim
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         gcc \
+        g++ \
         python3 \
         python3-pip \
         ripgrep \
