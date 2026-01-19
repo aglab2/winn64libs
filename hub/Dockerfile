@@ -7,6 +7,7 @@ RUN apt-get update && \
         python3-pip \
         ripgrep \
         make \
+        libc6-dev \
         ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
