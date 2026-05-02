@@ -1,7 +1,7 @@
-diff -ur "D:\\crash\\a\\gcc-14.3.0/gcc/config/mips/mips.md" "D:\\crash\\gcc-14.3.0/gcc/config/mips/mips.md"
---- a/gcc/config/mips/mips.md
-+++ b/gcc/config/mips/mips.md
-@@ -5780,10 +5787,11 @@
+diff -ru "a/gcc/config/mips/mips.md" b/gcc/config/mips/mips.md
+--- "a/gcc/config/mips/mips.md"	2026-05-02 20:04:43.011700670 +0800
++++ b/gcc/config/mips/mips.md	2026-05-02 20:06:16.881634797 +0800
+@@ -5816,10 +5816,10 @@
  
  ;; Cache operations for R4000-style caches.
  (define_insn "mips_cache"
@@ -16,3 +16,4 @@ diff -ur "D:\\crash\\a\\gcc-14.3.0/gcc/config/mips/mips.md" "D:\\crash\\gcc-14.3
    "ISA_HAS_CACHE"
    "cache\t%X0,%a1"
    [(set_attr "extended_mips16" "yes")])
+

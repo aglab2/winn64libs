@@ -1,8 +1,7 @@
-diff --git a/gcc/config/mips/mips.cc b/gcc/config/mips/mips.cc
-index e64928f4113..7aee85ac65d 100644
---- a/gcc/config/mips/mips.cc
-+++ b/gcc/config/mips/mips.cc
-@@ -13811,6 +13811,7 @@ mips_adjust_insn_length (rtx_insn *insn, int length)
+diff -ru "a/gcc/config/mips/mips.cc" b/gcc/config/mips/mips.cc
+--- "a/gcc/config/mips/mips.cc"	2026-04-30 16:33:20.000000000 +0800
++++ b/gcc/config/mips/mips.cc	2026-05-02 19:44:02.978246442 +0800
+@@ -14165,6 +14165,7 @@
  
        case HAZARD_DELAY:
        case HAZARD_FORBIDDEN_SLOT:
@@ -10,7 +9,7 @@ index e64928f4113..7aee85ac65d 100644
  	length += NOP_INSN_LENGTH;
  	break;
  
-@@ -18972,6 +18973,32 @@ mips_classify_branch_p6600 (rtx_insn *insn)
+@@ -19362,6 +19363,32 @@
    return UC_UNDEFINED;
  }
  
@@ -43,7 +42,7 @@ index e64928f4113..7aee85ac65d 100644
  /* Subroutine of mips_reorg_process_insns.  If there is a hazard between
     INSN and a previous instruction, avoid it by inserting nops after
     instruction AFTER.
-@@ -18989,7 +19016,7 @@ mips_classify_branch_p6600 (rtx_insn *insn)
+@@ -19379,7 +19406,7 @@
  
  static void
  mips_avoid_hazard (rtx_insn *after, rtx_insn *insn, int *hilo_delay,
@@ -52,7 +51,7 @@ index e64928f4113..7aee85ac65d 100644
  {
    rtx pattern, set;
    int nops, ninsns;
-@@ -19039,6 +19066,8 @@ mips_avoid_hazard (rtx_insn *after, rtx_insn *insn, int *hilo_delay,
+@@ -19429,6 +19456,8 @@
  	       || (mips_classify_branch_p6600 (insn) == UC_BALC
  		   && mips_classify_branch_p6600 (after) == UC_OTHER)))
      nops = 1;
@@ -61,7 +60,7 @@ index e64928f4113..7aee85ac65d 100644
    else
      nops = 0;
  
-@@ -19063,6 +19092,7 @@ mips_avoid_hazard (rtx_insn *after, rtx_insn *insn, int *hilo_delay,
+@@ -19453,6 +19482,7 @@
    *hilo_delay += ninsns;
    *delayed_reg = 0;
    *fs_delay = false;
@@ -69,7 +68,7 @@ index e64928f4113..7aee85ac65d 100644
    if (INSN_CODE (insn) >= 0)
      switch (get_attr_hazard (insn))
        {
-@@ -19092,6 +19122,10 @@ mips_avoid_hazard (rtx_insn *after, rtx_insn *insn, int *hilo_delay,
+@@ -19482,6 +19512,10 @@
  	gcc_assert (set);
  	*delayed_reg = SET_DEST (set);
  	break;
@@ -80,7 +79,7 @@ index e64928f4113..7aee85ac65d 100644
        }
  }
  
-@@ -19135,6 +19169,7 @@ mips_reorg_process_insns (void)
+@@ -19533,6 +19567,7 @@
    rtx lo_reg, delayed_reg;
    int hilo_delay;
    bool fs_delay;
@@ -88,7 +87,7 @@ index e64928f4113..7aee85ac65d 100644
  
    /* Force all instructions to be split into their final form.  */
    split_all_insns_noflow ();
-@@ -19204,6 +19239,7 @@ mips_reorg_process_insns (void)
+@@ -19602,6 +19637,7 @@
    delayed_reg = 0;
    lo_reg = gen_rtx_REG (SImode, LO_REGNUM);
    fs_delay = false;
@@ -96,7 +95,7 @@ index e64928f4113..7aee85ac65d 100644
  
    /* Make a second pass over the instructions.  Delete orphaned
       high-part relocations or turn them into NOPs.  Avoid hazards
-@@ -19288,7 +19324,7 @@ mips_reorg_process_insns (void)
+@@ -19686,7 +19722,7 @@
  			INSN_CODE (subinsn) = CODE_FOR_nop;
  		      }
  		    mips_avoid_hazard (last_insn, subinsn, &hilo_delay,
@@ -105,7 +104,7 @@ index e64928f4113..7aee85ac65d 100644
  		  }
  	      last_insn = insn;
  	    }
-@@ -19309,7 +19345,7 @@ mips_reorg_process_insns (void)
+@@ -19707,7 +19743,7 @@
  	      else
  		{
  		  mips_avoid_hazard (last_insn, insn, &hilo_delay,
@@ -114,11 +113,10 @@ index e64928f4113..7aee85ac65d 100644
  		  /* When a compact branch introduces a forbidden slot hazard
  		     and the next useful instruction is a SEQUENCE of a jump
  		     and a non-nop instruction in the delay slot, remove the
-diff --git a/gcc/config/mips/mips.h b/gcc/config/mips/mips.h
-index 02562d3b644..28687325a88 100644
---- a/gcc/config/mips/mips.h
-+++ b/gcc/config/mips/mips.h
-@@ -294,6 +294,7 @@ struct mips_cpu_info {
+diff -ru "a/gcc/config/mips/mips.h" b/gcc/config/mips/mips.h
+--- "a/gcc/config/mips/mips.h"	2026-04-30 16:33:20.000000000 +0800
++++ b/gcc/config/mips/mips.h	2026-05-02 19:45:06.391164036 +0800
+@@ -302,6 +302,7 @@
  #define TARGET_MIPS4000             (mips_arch == PROCESSOR_R4000)
  #define TARGET_MIPS4120             (mips_arch == PROCESSOR_R4120)
  #define TARGET_MIPS4130             (mips_arch == PROCESSOR_R4130)
@@ -126,11 +124,12 @@ index 02562d3b644..28687325a88 100644
  #define TARGET_MIPS5400             (mips_arch == PROCESSOR_R5400)
  #define TARGET_MIPS5500             (mips_arch == PROCESSOR_R5500)
  #define TARGET_MIPS5900             (mips_arch == PROCESSOR_R5900)
-@@ -1294,11 +1295,13 @@ struct mips_cpu_info {
+@@ -1349,12 +1350,14 @@
  
  /* Likewise mtc1 and mfc1.  */
  #define ISA_HAS_XFER_DELAY	(mips_isa <= MIPS_ISA_MIPS3	\
 +				 && !TARGET_MIPS4300		\
+ 				 && !TARGET_ALLEGREX		\
  				 && !TARGET_MIPS5900		\
  				 && !TARGET_LOONGSON_2EF)
  
@@ -140,19 +139,10 @@ index 02562d3b644..28687325a88 100644
  				 && !TARGET_MIPS5900		\
  				 && !TARGET_LOONGSON_2EF)
  
-@@ -1433,6 +1436,7 @@ struct mips_cpu_info {
- %{mfix-r5900} %{mno-fix-r5900} \
- %{mfix-rm7000} %{mno-fix-rm7000} \
- %{mfix-vr4120} %{mfix-vr4130} \
-+%{mfix4300} %{mno-fix4300} \
- %{mfix-24k} \
- %{noasmopt:-O0; O0|fno-delayed-branch:-O1; O*:-O2; :-O1} \
- %(subtarget_asm_debugging_spec) \
-diff --git a/gcc/config/mips/mips.md b/gcc/config/mips/mips.md
-index e0f0a582732..4301a0a9eff 100644
---- a/gcc/config/mips/mips.md
-+++ b/gcc/config/mips/mips.md
-@@ -740,7 +740,7 @@
+diff -ru "a/gcc/config/mips/mips.md" b/gcc/config/mips/mips.md
+--- "a/gcc/config/mips/mips.md"	2026-04-30 16:33:20.000000000 +0800
++++ b/gcc/config/mips/mips.md	2026-05-02 19:44:02.979048659 +0800
+@@ -758,7 +758,7 @@
  ;; DELAY means that the next instruction cannot read the result
  ;; of this one.  HILO means that the next two instructions cannot
  ;; write to HI or LO.
@@ -161,7 +151,7 @@ index e0f0a582732..4301a0a9eff 100644
    (cond [(and (eq_attr "type" "load,fpload,fpidxload")
  	      (match_test "ISA_HAS_LOAD_DELAY"))
  	 (const_string "delay")
-@@ -760,8 +760,12 @@
+@@ -778,8 +778,12 @@
  
  	 (and (eq_attr "type" "mfhi,mflo")
  	      (not (match_test "ISA_HAS_HILO_INTERLOCKS")))
@@ -176,7 +166,7 @@ index e0f0a582732..4301a0a9eff 100644
  
  ;; Can the instruction be put into a delay slot?
  (define_attr "can_delay" "no,yes"
-@@ -1527,25 +1531,11 @@
+@@ -1554,25 +1558,11 @@
    [(set (match_operand:SCALARF 0 "register_operand" "=f")
  	(mult:SCALARF (match_operand:SCALARF 1 "register_operand" "f")
  		      (match_operand:SCALARF 2 "register_operand" "f")))]
@@ -203,3 +193,4 @@ index e0f0a582732..4301a0a9eff 100644
  (define_insn "mulv2sf3"
    [(set (match_operand:V2SF 0 "register_operand" "=f")
  	(mult:V2SF (match_operand:V2SF 1 "register_operand" "f")
+

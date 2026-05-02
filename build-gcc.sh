@@ -147,7 +147,7 @@ JOBS="${JOBS:-1}" # If getconf returned nothing, default to 1
 
 # Dependency source libs (Versions)
 BINUTILS_V=2.30
-GCC_V=14.3.0
+GCC_V=16.1.0
 NEWLIB_V=4.1.0
 
 # Check if a command-line tool is available: status 0 means "yes"; status 1 means "no"
@@ -187,7 +187,8 @@ test -d "gcc-$GCC_V"           || { \
                                       patch -p1 < "../bb-reorder.patch"; \
                                       patch -p1 < "../gcc-vr4300.patch"; \
                                       patch -p1 < "../mips_floats.patch"; \
-                                      patch -p1 < "../mips_cache.patch"; \
+                                      patch -p1 < "../mips_oddspreg_no_warn.patch"; \
+                                      patch --verbose -p1 < "../mips_cache.patch"; \
                                       patch -p1 < "../mingw.patch"; \
                                       sed -i 's/set_std_c23 (false/set_std_c17 (false/' gcc/c-family/c-opts.cc \
                                       contrib/download_prerequisites; \
