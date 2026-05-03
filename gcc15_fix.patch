@@ -1,0 +1,41 @@
+diff -u -r a/intl/dcigettext.c b/intl/dcigettext.c
+--- a/intl/dcigettext.c	2026-05-03 12:26:35
++++ b/intl/dcigettext.c	2026-05-03 12:23:11
+@@ -148,7 +148,7 @@
+ char *getwd ();
+ #  define getcwd(buf, max) getwd (buf)
+ # else
++char *getcwd (char *buf, size_t size);
+-char *getcwd ();
+ # endif
+ # ifndef HAVE_STPCPY
+ static char *stpcpy PARAMS ((char *dest, const char *src));
+--- a/opcodes/mips-formats.h	2026-05-03 12:39:19
++++ b/opcodes/mips-formats.h	2018-01-13 21:31:16
+@@ -49,7 +49,7 @@
+ #define MAPPED_INT(SIZE, LSB, MAP, PRINT_HEX) \
+   { \
+     typedef char ATTRIBUTE_UNUSED \
++      static_assert1[(1 << (SIZE)) == ARRAY_SIZE (MAP)]; \
+-      static_assert[(1 << (SIZE)) == ARRAY_SIZE (MAP)]; \
+     static const struct mips_mapped_int_operand op = { \
+       { OP_MAPPED_INT, SIZE, LSB }, MAP, PRINT_HEX \
+     }; \
+@@ -83,7 +83,7 @@
+ #define MAPPED_REG(SIZE, LSB, BANK, MAP) \
+   { \
+     typedef char ATTRIBUTE_UNUSED \
++      static_assert1[(1 << (SIZE)) == ARRAY_SIZE (MAP)]; \
+-      static_assert[(1 << (SIZE)) == ARRAY_SIZE (MAP)]; \
+     static const struct mips_reg_operand op = { \
+       { OP_REG, SIZE, LSB }, OP_REG_##BANK, MAP \
+     }; \
+@@ -93,7 +93,7 @@
+ #define OPTIONAL_MAPPED_REG(SIZE, LSB, BANK, MAP) \
+   { \
+     typedef char ATTRIBUTE_UNUSED \
++      static_assert1[(1 << (SIZE)) == ARRAY_SIZE (MAP)]; \
+-      static_assert[(1 << (SIZE)) == ARRAY_SIZE (MAP)]; \
+     static const struct mips_reg_operand op = { \
+       { OP_OPTIONAL_REG, SIZE, LSB }, OP_REG_##BANK, MAP \
+     }; \

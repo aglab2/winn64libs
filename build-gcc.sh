@@ -179,6 +179,7 @@ test -d "binutils-$BINUTILS_V" || { \
                                       patch -p1 < "../gas-vr4300.patch"; \
                                       patch -p1 < "../no-fp-warn.patch"; \
                                       patch -p1 < "../sdata_merging_bfd.patch"; \
+                                      patch -p1 < "../gcc15_fix.patch"; \
                                       popd; \
                                   }
 test -d "gcc-$GCC_V"           || { \
@@ -190,7 +191,7 @@ test -d "gcc-$GCC_V"           || { \
                                       patch -p1 < "../mips_oddspreg_no_warn.patch"; \
                                       patch --verbose -p1 < "../mips_cache.patch"; \
                                       patch -p1 < "../mingw.patch"; \
-                                      sed -i 's/set_std_c23 (false/set_std_c17 (false/' gcc/c-family/c-opts.cc \
+                                      sed -i '' 's/set_std_c23 (false/set_std_c17 (false/' gcc/c-family/c-opts.cc; \
                                       contrib/download_prerequisites; \
                                       popd; \
                                   }
